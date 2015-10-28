@@ -11,5 +11,7 @@
 
 #import <EZAudio/EZRecorder.h>
 #import <EZAudio/EZMicrophone.h>
+#import <EZAudio/EZAudioFile.h>
+#import <EZAudio/EZAudioPlayer.h>
 
 #endif /* Resonance_Bridging_Header_h */

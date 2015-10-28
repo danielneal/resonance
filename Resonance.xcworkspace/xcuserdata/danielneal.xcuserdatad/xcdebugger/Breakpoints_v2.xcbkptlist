@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Resonance/FirstViewController.swift"
-            timestampString = "467756006.992383"
+            timestampString = "467757124.270993"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "microphone(_:hasBufferList:withBufferSize:withNumberOfChannels:)"
             landmarkType = "5">
          </BreakpointContent>

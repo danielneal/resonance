@@ -8,22 +8,21 @@
 
 import UIKit
 
-class FirstViewController: UIViewController , EZMicrophoneDelegate, EZRecorderDelegate {
-    @IBOutlet weak var startButton: UIButton!
+class FirstViewController: UIViewController , EZMicrophoneDelegate, EZRecorderDelegate, EZAudioPlayerDelegate {
 
+    lazy var microphone: EZMicrophone =  EZMicrophone.init(delegate: self);
+    var recorder: EZRecorder?
+    var isRecording: Bool = false;
+    var audioPlayer = EZAudioPlayer.init()
+    let audioFileName = "/tmp/resonance.m4a"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-
+    
     func newRecorder() ->  EZRecorder! {
-        return EZRecorder.init(URL: NSURL.init(fileURLWithPath: "/tmp/resonance.m4a"), clientFormat:self.microphone.audioStreamBasicDescription(), fileType:EZRecorderFileType.M4A)
+        return EZRecorder.init(URL: NSURL.init(fileURLWithPath: audioFileName), clientFormat:self.microphone.audioStreamBasicDescription(), fileType:EZRecorderFileType.M4A)
     }
-    
-    lazy var microphone: EZMicrophone =  EZMicrophone.init(delegate: self);
-    
-    var recorder: EZRecorder?
-
-    var isRecording: Bool = false;
     
     func recorderUpdatedCurrentTime(recorder: EZRecorder!) {
        let currentTime=recorder.formattedCurrentTime
@@ -36,32 +35,38 @@ class FirstViewController: UIViewController , EZMicrophoneDelegate, EZRecorderDe
 
         if (self.isRecording)
         {
-            // Since we set the recorder's client format to be that of the EZMicrophone instance,
-            // the audio data coming in represented by the AudioBufferList can directly be provided
-            // to the EZRecorder. The EZRecorder will internally convert the audio data from the
-            // `clientFormat` to `fileFormat`.
             self.recorder!.appendDataFromBufferList(bufferList, withBufferSize: bufferSize)
         }
     }
 
+    @IBOutlet weak var startButton: UIButton!
+    
+    @IBAction func playBackPressed(sender: AnyObject) {
+        let audioFile=EZAudioFile.init(URL: NSURL.init(fileURLWithPath: audioFileName))
+        audioPlayer.playAudioFile(audioFile)
+    }
+    
+    func audioPlayer(audioPlayer: EZAudioPlayer!, playedAudio buffer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withBufferSize bufferSize: UInt32, withNumberOfChannels numberOfChannels: UInt32, inAudioFile audioFile: EZAudioFile!) {
+      
+    }
+    
     @IBOutlet weak var recordingTime: UILabel!
     
     @IBAction func onStartPress(sender: AnyObject) {
-        if (!self.isRecording)
+        if (self.isRecording)
         {
-            self.recorder = newRecorder()
-            self.recorder!.delegate=self
-            self.startButton.setTitle("Stop", forState:UIControlState.Normal)
-            self.isRecording=true
-            microphone.startFetchingAudio()
-        }
-        else
-        {
+            self.startButton.setTitle("Start", forState:UIControlState.Normal)
             self.isRecording=false
             microphone.stopFetchingAudio()
             self.recorder!.closeAudioFile()
-            self.recorder=newRecorder()
-            self.startButton.setTitle("Start", forState:UIControlState.Normal)
+        }
+        else
+        {
+            self.startButton.setTitle("Stop", forState:UIControlState.Normal)
+            self.recorder = newRecorder()
+            self.recorder!.delegate=self
+            self.isRecording=true
+            microphone.startFetchingAudio()
         }
     }
     
